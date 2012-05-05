@@ -1,0 +1,17 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../SpiekSdk/Sip/pjsipRegistrar.cs">
+    <Files>
+      <File FileName="Deveck.TAM/Program.cs" Line="24" Column="1" />
+      <File FileName="Deveck.TAM/Sipek/SipekFactory.cs" Line="43" Column="16" />
+      <File FileName="../SpiekSdk/Sip/pjsipCallWrapper.cs" Line="1" Column="1" />
+      <File FileName="../SpiekSdk/Sip/pjsipRegistrar.cs" Line="69" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/windows/d/dev/Deveck.TAM/Deveck.TAM/Deveck.TAM/Program.cs" line="21" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
