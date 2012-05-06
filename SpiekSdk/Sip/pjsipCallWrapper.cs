@@ -29,10 +29,12 @@ using System.Runtime.InteropServices;
 namespace Sipek.Sip
 {
 
+
   // callback delegates
   delegate int OnCallStateChanged(int callId, ESessionState stateId);
   delegate int OnCallIncoming(int callId, string number);
   delegate int OnCallHoldConfirm(int callId);
+  delegate int OnWavPlayerEnded(int callId, int playerId);
 
   /// <summary>
   /// Implementation of ICallProxyInterface interface use by call state machine. 
@@ -40,8 +42,9 @@ namespace Sipek.Sip
   /// Current session is identified by SessionId property.
   /// pjsipCallProxy communicates with pjsip stack using API functions and callbacks.
   /// </summary>
-  internal class pjsipCallProxy : ICallProxyInterface
+  public class pjsipCallProxy : ICallProxyInterface
   {
+  	public static event Action<int> OnWavPlayerCompleted;
     #region DLL declarations
 
 #if LINUX
@@ -79,7 +82,8 @@ namespace Sipek.Sip
     private static extern int dll_makeConference(int callId);
 	[DllImport(PJSIP_DLL, EntryPoint = "dll_playWav")]
     public static extern int dll_playWav(StringBuilder wavFile, int callId);
-    
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_releaseWav")]
+    public static extern int dll_releaseWav(int playerId);
     #endregion
 
     #region Callback Declarations
@@ -90,12 +94,15 @@ namespace Sipek.Sip
     private static extern int onCallIncoming(OnCallIncoming cb);
     [DllImport(PJSIP_DLL)]
     private static extern int onCallHoldConfirmCallback(OnCallHoldConfirm cb);
-
+ 	[DllImport(PJSIP_DLL)]
+    private static extern int onWavPlayerEndedCallback(OnWavPlayerEnded cb);
+    
     // Static declaration because of CallbackonCollectedDelegate exception!
     static OnCallStateChanged csDel = new OnCallStateChanged(onCallStateChanged);
     static OnCallIncoming ciDel = new OnCallIncoming(onCallIncoming);
     static OnCallHoldConfirm chDel = new OnCallHoldConfirm(onCallHoldConfirm);
-
+    static OnWavPlayerEnded cbWav = new OnWavPlayerEnded(onWavPlayerEnded);
+    
     #endregion
 
     #region Properties
@@ -135,6 +142,7 @@ namespace Sipek.Sip
       onCallIncoming(ciDel);
       onCallStateCallback(csDel);
       onCallHoldConfirmCallback(chDel);
+      onWavPlayerEndedCallback(cbWav);
     }
 
     #endregion Constructor
@@ -396,6 +404,14 @@ namespace Sipek.Sip
       // TODO:::implement proper callback
       BaseCallNotification(callId, ECallNotification.CN_HOLDCONFIRM, "");
       return 1;
+    }
+    
+    private static int onWavPlayerEnded(int callId, int playerId)
+    {
+    	if(OnWavPlayerCompleted != null)
+    		OnWavPlayerCompleted(callId);
+    	
+    	return dll_releaseWav(playerId);
     }
     #endregion
   	

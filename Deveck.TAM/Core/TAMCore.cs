@@ -50,9 +50,9 @@ namespace Deveck.TAM.Core
 		{			
 			ThreadPool.UnsafeQueueUserWorkItem(
 				(WaitCallback)delegate(object state){
-					Thread.Sleep(5000);
+					Thread.Sleep(1000);
 					incomingCall.AcceptCall();
-					Thread.Sleep(5000);
+					Thread.Sleep(1000);
 					incomingCall.PlayAudioFile("C:\\austinpowers.wav");
 				}, null);
 		}

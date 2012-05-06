@@ -63,7 +63,7 @@
       <HintPath>NLog.dll</HintPath>
     </Reference>
     <Reference Include="pjsipDll">
-      <HintPath>..\..\SpiekSdk\pjsipDll.dll</HintPath>
+      <HintPath>..\SpiekSdk\pjsipDll.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -125,6 +125,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="accounts.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

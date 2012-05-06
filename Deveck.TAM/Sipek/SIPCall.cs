@@ -79,7 +79,7 @@ namespace Deveck.TAM.Sipek
 				(MethodInvoker)delegate
 				{
 					_log.Info("In invoke", file);
-				  _resources.CallManager.playWavFile(_sipekCallId, file);
+				  _resources.CallManager.playWavFile(0, file);
 				});
 		}
 	}

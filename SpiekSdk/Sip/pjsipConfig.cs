@@ -70,6 +70,8 @@ namespace Sipek.Sip
     [MarshalAs(UnmanagedType.I1)]
     public bool pollingEventsEnabled = false;
 
+    public int loglevel = 4;
+    
     // IMS specifics
     [MarshalAs(UnmanagedType.I1)]
     public bool imsEnabled = false; // secAgreement rfc 3329

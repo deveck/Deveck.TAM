@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
-
 using Deveck.TAM.Core;
 using NLog;
 using Sipek.Common;
 using Sipek.Common.CallControl;
+using Sipek.Sip;
 
 namespace Deveck.TAM.Sipek
 {
@@ -85,6 +85,8 @@ namespace Deveck.TAM.Sipek
 						}
 						
 					}
+					
+					pjsipCallProxy.OnWavPlayerCompleted += delegate(int callId) { _log.Info("Wav playback for call '{0}' ended", callId) };
 				});
 		}
 

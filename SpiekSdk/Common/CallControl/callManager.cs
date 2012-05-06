@@ -56,6 +56,7 @@ namespace Sipek.Common.CallControl
 
   public delegate void DCallStateRefresh(int sessionId);
   public delegate void DIncomingCallNotification(int sessionId, string number, string info);  
+  public delegate void DWavPlayerEndedNotification(int callId, int playerId);
 
   //////////////////////////////////////////////////////////////////////////
   /// <summary>
