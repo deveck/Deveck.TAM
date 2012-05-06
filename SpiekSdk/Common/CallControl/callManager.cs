@@ -43,10 +43,13 @@
     Call control...
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+
 using Sipek.Common;
-using System;
+using Sipek.Sip;
 
 namespace Sipek.Common.CallControl
 {
@@ -592,6 +595,11 @@ namespace Sipek.Common.CallControl
       _pendingAction = null;
     }
     
+    public void playWavFile(int session, String file)
+    {
+    	pjsipCallProxy.dll_playWav(new StringBuilder(file), session);
+    	//this[session].State.playWavFile(file);
+    }
     #endregion  // public methods
 
     #region Private Methods

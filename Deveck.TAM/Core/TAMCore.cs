@@ -47,13 +47,14 @@ namespace Deveck.TAM.Core
 		}
 		
 		private void provider_OnIncomingCall(IIncomingCall incomingCall)
-		{
-			Thread.Sleep(5000);
-					incomingCall.Hangup();
-//			ThreadPool.UnsafeQueueUserWorkItem(
-//				(WaitCallback)delegate(object state){
-//					
-//				}, null);
+		{			
+			ThreadPool.UnsafeQueueUserWorkItem(
+				(WaitCallback)delegate(object state){
+					Thread.Sleep(5000);
+					incomingCall.AcceptCall();
+					Thread.Sleep(5000);
+					incomingCall.PlayAudioFile("C:\\austinpowers.wav");
+				}, null);
 		}
 	}
 }

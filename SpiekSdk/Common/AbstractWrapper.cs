@@ -291,7 +291,7 @@ namespace Sipek.Common
     /// </summary>
     /// <param name="file"></param>
     /// <param name="callId"></param>
-    public abstract int playWavFile(string file, int callId);
+    public abstract int playWavFile(string file);
     #endregion
   }
 
@@ -383,7 +383,7 @@ namespace Sipek.Common
 
     #endregion
   	
-	public override int playWavFile(string file, int callId)
+	public override int playWavFile(string file)
 	{
 		return -1;
 	}

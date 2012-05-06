@@ -9,6 +9,7 @@
 using System;
 using System.Windows.Forms;
 using Deveck.TAM.Core;
+using NLog;
 
 namespace Deveck.TAM.Sipek
 {
@@ -17,6 +18,8 @@ namespace Deveck.TAM.Sipek
 	/// </summary>
 	public class SIPIncomingCall : SIPCall, IIncomingCall
 	{
+		private Logger _log = LogManager.GetCurrentClassLogger();
+		
 		private String _remoteIdentifier;
 		
 		public SIPIncomingCall(SIPCallProvider callProvider, SipekResources resources, int sipekCallId, String remoteIdentifier)
@@ -27,6 +30,7 @@ namespace Deveck.TAM.Sipek
 		
 		public void AcceptCall()
 		{
+			_log.Info("Accepting call '{0}' remote identifier '{1}'", _sipekCallId, _remoteIdentifier);
 			lock(this)
 			{
 				_callProvider.Invoke(

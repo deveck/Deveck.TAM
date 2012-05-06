@@ -218,7 +218,7 @@ namespace Sipek.Common
       return false;
     }
 
-    public override int playWavFile(string file, int callId)
+    public override int playWavFile(string file)
 	{
     	return -1;
 	}

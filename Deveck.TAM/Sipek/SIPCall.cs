@@ -9,6 +9,7 @@
 using System;
 using System.Windows.Forms;
 using Deveck.TAM.Core;
+using NLog;
 
 namespace Deveck.TAM.Sipek
 {
@@ -25,6 +26,7 @@ namespace Deveck.TAM.Sipek
 	
 		protected int _sipekCallId;
 		
+		private Logger _log = LogManager.GetCurrentClassLogger();
 		
 		public SIPCall(SIPCallProvider callProvider, SipekResources resources, int sipekCallId)
 		{
@@ -64,6 +66,20 @@ namespace Deveck.TAM.Sipek
 				(MethodInvoker)delegate
 				{
 				  _resources.CallManager.onUserRelease(_sipekCallId);
+				});
+		}
+		
+		public void PlayAudioFile(string file)
+		{
+			_log.Info("Playing wav file '{0}'", file);
+//			if(!(CallState == CallState.Connected))
+//				throw new InvalidOperationException("Call is not connected");
+			
+			_callProvider.Invoke(
+				(MethodInvoker)delegate
+				{
+					_log.Info("In invoke", file);
+				  _resources.CallManager.playWavFile(_sipekCallId, file);
 				});
 		}
 	}

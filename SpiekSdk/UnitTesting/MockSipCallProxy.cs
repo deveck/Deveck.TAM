@@ -93,7 +93,7 @@ namespace UnitTest
 	    throw new Exception("The method or operation is not implemented.");
 	  }
 		
-		public override int playWavFile(string file, int callId)
+		public override int playWavFile(string file)
 		{
 			throw new NotImplementedException();
 		}

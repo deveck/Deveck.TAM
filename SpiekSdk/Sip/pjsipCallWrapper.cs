@@ -78,7 +78,7 @@ namespace Sipek.Sip
     [DllImport(PJSIP_DLL, EntryPoint = "dll_makeConference")]
     private static extern int dll_makeConference(int callId);
 	[DllImport(PJSIP_DLL, EntryPoint = "dll_playWav")]
-    private static extern int dll_playWav(StringBuilder wavFile, int callId);
+    public static extern int dll_playWav(StringBuilder wavFile, int callId);
     
     #endregion
 
@@ -313,9 +313,9 @@ namespace Sipek.Sip
       return status == 1? true : false;
     }
     
-    public override int playWavFile(string file, int callId)
+    public override int playWavFile(string file)
 	{
-    	return dll_playWav(new StringBuilder(file), callId);
+    	return dll_playWav(new StringBuilder(file), SessionId);
 	}
 
     #endregion Methods

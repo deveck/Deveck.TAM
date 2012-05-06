@@ -47,6 +47,8 @@ namespace Deveck.TAM.Core
 		CallDirection CallDirection {get;}
 		
 		void Hangup();
+		
+		void PlayAudioFile(String file);
 	}
 	
 	public interface IIncomingCall : ICall

@@ -22,6 +22,7 @@ namespace Deveck.TAM.Sipek
 		
 		private Thread _sipThread = null;
 		private Dispatcher _dispatcher = null;
+		private AutoResetEvent _initialized = new AutoResetEvent(false);
 		
 		private void InitThread()
 		{
@@ -29,8 +30,10 @@ namespace Deveck.TAM.Sipek
 				delegate
 				{
 					_dispatcher = Dispatcher.CurrentDispatcher;
-					Dispatcher.Run();
+					_initialized.Set();
+					Dispatcher.Run();					
 				}));
+			_sipThread.Start();
 		}
 		
 		public void Invoke(Delegate target)
@@ -45,6 +48,7 @@ namespace Deveck.TAM.Sipek
 			
 			InitThread();
 			
+			_initialized.WaitOne();
 			_dispatcher.Invoke(
 				DispatcherPriority.Normal,
 				(MethodInvoker)delegate
