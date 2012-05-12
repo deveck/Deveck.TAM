@@ -59,6 +59,9 @@
     <PlatformTarget>anycpu</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NAudio">
+      <HintPath>libs\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="NLog">
       <HintPath>NLog.dll</HintPath>
     </Reference>
@@ -84,6 +87,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\AcceptCallAction.cs" />
+    <Compile Include="Actions\ActionPack.cs" />
+    <Compile Include="Actions\ActionManager.cs" />
+    <Compile Include="Actions\HangupAction.cs" />
+    <Compile Include="Actions\IActionProvider.cs" />
+    <Compile Include="Actions\DelayAction.cs" />
+    <Compile Include="Actions\IAction.cs" />
+    <Compile Include="Actions\PlaywavAction.cs" />
+    <Compile Include="Actions\XmlActionFactory.cs" />
     <Compile Include="Core\ICallProvider.cs" />
     <Compile Include="Core\ICall.cs" />
     <Compile Include="Core\TAMCore.cs" />
@@ -99,7 +111,14 @@
     <Compile Include="Sipek\SIPCallProvider.cs" />
     <Compile Include="Sipek\SipekFactory.cs" />
     <Compile Include="Sipek\SIPIncomingCall.cs" />
+    <Compile Include="Triggers\DayTrigger.cs" />
+    <Compile Include="Triggers\ITrigger.cs" />
+    <Compile Include="Triggers\RingDelay.cs" />
+    <Compile Include="Triggers\TriggerCollector.cs" />
+    <Compile Include="Triggers\TriggerManager.cs" />
+    <Compile Include="Triggers\XmlTriggerFactory.cs" />
     <Compile Include="Utils\CommandLineHandler.cs" />
+    <Compile Include="Utils\Tokenizer.cs" />
     <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +155,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core" />
+    <Folder Include="Actions" />
+    <Folder Include="Triggers" />
     <Folder Include="Utils" />
   </ItemGroup>
   <ItemGroup>

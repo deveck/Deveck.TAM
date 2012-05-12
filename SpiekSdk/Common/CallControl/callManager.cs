@@ -596,10 +596,9 @@ namespace Sipek.Common.CallControl
       _pendingAction = null;
     }
     
-    public void playWavFile(int session, String file)
+    public void playWavFile(int callId, String file)
     {
-    	pjsipCallProxy.dll_playWav(new StringBuilder(file), session);
-    	//this[session].State.playWavFile(file);
+    	pjsipCallProxy.dll_playWav(new StringBuilder(file), callId);
     }
     #endregion  // public methods
 

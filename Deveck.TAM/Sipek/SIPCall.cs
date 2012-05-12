@@ -7,7 +7,10 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Threading;
 using System.Windows.Forms;
+
+using Deveck.TAM.Actions;
 using Deveck.TAM.Core;
 using NLog;
 
@@ -18,21 +21,32 @@ namespace Deveck.TAM.Sipek
 	/// </summary>
 	public class SIPCall : ICall
 	{
+		protected AutoResetEvent _audioPlaybackCompleted = new AutoResetEvent(false);
 		protected SipekResources _resources;
 		
 		protected SIPCallProvider _callProvider;
 		protected DateTime _date;
 		protected CallState _callState;
-	
+		
 		protected int _sipekCallId;
+		protected IActionProvider _actionProvider;
 		
 		private Logger _log = LogManager.GetCurrentClassLogger();
 		
-		public SIPCall(SIPCallProvider callProvider, SipekResources resources, int sipekCallId)
+		public event Action<ICall> OnAudioPlaybackCompleted;
+		
+		public SIPCall(SIPCallProvider callProvider, SipekResources resources, int sipekCallId, IActionProvider actionProvider)
 		{
 			_resources = resources;
 			_sipekCallId = sipekCallId;
 			_callProvider = callProvider;
+			_actionProvider = actionProvider;
+			_date = DateTime.Now;
+		}
+		
+		public int SipekCallId
+		{
+			get{ return _sipekCallId; }
 		}
 		
 		public ICallProvider CallProvider {
@@ -47,11 +61,14 @@ namespace Deveck.TAM.Sipek
 			get { return _callState; }
 			set
 			{
-				lock(this)
-				{
-					_callState = value;
-				}
+				_callState = value;
+				_log.Info("Changed state of call '{0}' to '{1}'", SipekCallId, CallState);
 			}
+		}
+		
+		public IActionProvider ActionProvider
+		{
+			get{ return _actionProvider;}
 		}
 		
 		public CallDirection CallDirection {
@@ -62,11 +79,15 @@ namespace Deveck.TAM.Sipek
 		
 		public void Hangup()
 		{
+			if(CallState == CallState.Connected)
+			{
 			_callProvider.Invoke(
 				(MethodInvoker)delegate
 				{
-				  _resources.CallManager.onUserRelease(_sipekCallId);
+					_resources.CallManager.onUserRelease(_sipekCallId);
 				});
+			}
+			_audioPlaybackCompleted.Set();
 		}
 		
 		public void PlayAudioFile(string file)
@@ -79,8 +100,17 @@ namespace Deveck.TAM.Sipek
 				(MethodInvoker)delegate
 				{
 					_log.Info("In invoke", file);
-				  _resources.CallManager.playWavFile(0, file);
+					_resources.CallManager.playWavFile(_sipekCallId, file);
 				});
+			
+			_audioPlaybackCompleted.WaitOne();
+		}
+		
+		public void AudioPlaybackCompleted()
+		{
+			_audioPlaybackCompleted.Set();
+			if(OnAudioPlaybackCompleted != null)
+				OnAudioPlaybackCompleted(this);
 		}
 	}
 }

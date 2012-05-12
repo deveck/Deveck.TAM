@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using Deveck.TAM.Actions;
 
 namespace Deveck.TAM.Core
 {
@@ -29,6 +30,8 @@ namespace Deveck.TAM.Core
 	/// </summary>
 	public interface ICall
 	{
+		event Action<ICall> OnAudioPlaybackCompleted;
+		
 		/// <summary>
 		/// Returns the corresponding call provider
 		/// </summary>
@@ -45,6 +48,8 @@ namespace Deveck.TAM.Core
 		CallState CallState {get; }
 		
 		CallDirection CallDirection {get;}
+		
+		IActionProvider ActionProvider {get;}
 		
 		void Hangup();
 		

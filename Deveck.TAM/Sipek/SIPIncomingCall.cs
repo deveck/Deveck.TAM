@@ -8,6 +8,7 @@
  */
 using System;
 using System.Windows.Forms;
+using Deveck.TAM.Actions;
 using Deveck.TAM.Core;
 using NLog;
 
@@ -22,10 +23,11 @@ namespace Deveck.TAM.Sipek
 		
 		private String _remoteIdentifier;
 		
-		public SIPIncomingCall(SIPCallProvider callProvider, SipekResources resources, int sipekCallId, String remoteIdentifier)
-			:base(callProvider, resources, sipekCallId)
+		public SIPIncomingCall(SIPCallProvider callProvider, SipekResources resources, int sipekCallId, String remoteIdentifier, IActionProvider actionProvider)
+			:base(callProvider, resources, sipekCallId, actionProvider)
 		{
 			_remoteIdentifier = remoteIdentifier;	
+			
 		}
 		
 		public void AcceptCall()

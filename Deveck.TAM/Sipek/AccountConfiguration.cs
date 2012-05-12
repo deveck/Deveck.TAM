@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
+using Deveck.TAM.Actions;
 using Sipek.Common;
 
 namespace Deveck.TAM.Sipek
@@ -48,7 +49,7 @@ namespace Deveck.TAM.Sipek
 		}
 	}
 	
-	public class XmlAccount : IAccount
+	public class XmlAccount : IAccount, IActionProvider
 	{		
 		private XmlElement _accountRoot;
 		private int _index;
@@ -123,5 +124,19 @@ namespace Deveck.TAM.Sipek
 			                     DisplayName, AccountName, Id, DomainName, HostName, Index, ProxyAddress, TransportMode);
 		}
 
+		
+		public ActionPack[] ActionPacks 
+		{
+			get {
+				List<ActionPack> actionPacks = new List<ActionPack>();
+				
+				foreach(XmlElement actionsElement in _accountRoot.SelectNodes("actions"))
+				{
+					actionPacks.Add(ActionManager.Instance.FindActionPack(actionsElement.InnerText));
+				}
+				
+				return actionPacks.ToArray();
+			}
+		}
 	}
 }

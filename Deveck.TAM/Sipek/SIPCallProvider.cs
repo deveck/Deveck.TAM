@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
+
+using Deveck.TAM.Actions;
 using Deveck.TAM.Core;
 using NLog;
 using Sipek.Common;
@@ -18,7 +20,7 @@ namespace Deveck.TAM.Sipek
 		private SipekResources _resources = null;
 		private Logger _log = LogManager.GetCurrentClassLogger();
 		
-		private List<SIPIncomingCall> _incomingCalls = new List<SIPIncomingCall>();
+		private List<SIPCall> _calls = new List<SIPCall>();
 		
 		private Thread _sipThread = null;
 		private Dispatcher _dispatcher = null;
@@ -31,7 +33,7 @@ namespace Deveck.TAM.Sipek
 				{
 					_dispatcher = Dispatcher.CurrentDispatcher;
 					_initialized.Set();
-					Dispatcher.Run();					
+					Dispatcher.Run();
 				}));
 			_sipThread.Start();
 		}
@@ -86,10 +88,29 @@ namespace Deveck.TAM.Sipek
 						
 					}
 					
-					pjsipCallProxy.OnWavPlayerCompleted += delegate(int callId) { _log.Info("Wav playback for call '{0}' ended", callId) };
+					pjsipCallProxy.OnWavPlayerCompleted += 
+						delegate(int callId) 
+						{ 
+							_log.Info("Wav playback for call '{0}' ended", callId);
+							SIPCall call = FindCallById(callId);
+							
+							if(call != null)
+								call.AudioPlaybackCompleted();
+						};
 				});
 		}
 
+		
+		private SIPCall FindCallById(int callId)
+		{
+			foreach(SIPCall call in _calls)
+			{
+				if(call.SipekCallId.Equals(callId))
+					return call;
+			}
+			
+			return null;
+		}
 
 		private void resources_Registrar_AccountStateChanged(int accountId, int accState)
 		{
@@ -97,14 +118,28 @@ namespace Deveck.TAM.Sipek
 				_log.Error("Account state of nonexisting account {0} changed to {1}", accountId, accState);
 			else
 				_log.Info("Account state of Account {0} changed to {1}",  _resources.Configurator.Accounts[accountId], accState);
+			
+			
 		}
 
 		private void resources_CallManager_IncomingCallNotification(int callId, string number, string info)
 		{
 			_log.Info("Incoming call with id '{0}' from '{1}', info: {2}", callId, number, info);
+
+			//HACK: how to discover accountid?
+			IAccount account = _resources.Configurator.Accounts[0];
+			IActionProvider actionProvider = null;
+			if(account != null && typeof(IActionProvider).IsAssignableFrom(account.GetType()))
+				actionProvider = (IActionProvider)account;
 			
-			SIPIncomingCall call = new SIPIncomingCall(this, _resources, callId, number);
-			_incomingCalls.Add(call);
+			
+			SIPIncomingCall call = new SIPIncomingCall(this, _resources, callId, number, actionProvider);
+			call.CallState = CallState.Ringing;
+			
+			lock(_calls)
+			{
+				_calls.Add(call);
+			}
 			if(OnIncomingCall != null)
 				OnIncomingCall(call);
 		}
@@ -113,6 +148,46 @@ namespace Deveck.TAM.Sipek
 		{
 			_log.Info("Call with id '{0}' changed its state to {1}", callId, _resources.CallManager.getCall(callId).StateId);
 
+			lock(_calls)
+			{
+				SIPCall call = FindCallById(callId);
+				if(call == null)
+				{
+					_log.Info("Call with id '{0}' is not in list. Ignoring state change", callId);
+					return;
+				}
+				
+				switch(_resources.CallManager.getCall(callId).StateId)
+				{
+					case EStateId.ACTIVE:
+						call.CallState = CallState.Connected;
+						break;
+					case EStateId.INCOMING:
+						call.CallState = CallState.Ringing;
+						break;
+						
+						
+					case EStateId.TERMINATED:
+					case EStateId.IDLE:
+						call.CallState = CallState.Disconnected;
+						call.Hangup();
+						break;
+						
+					case EStateId.RELEASED:
+						call.CallState = CallState.HangUp;
+						break;
+						
+					case EStateId.NULL:
+						call.CallState = CallState.Disconnected;
+						lock(_calls)
+						{
+							_log.Info("Removing call '{0}'", callId);
+							_calls.Remove(call);
+						}
+						break;
+				}
+			}
+			
 		}
 		
 		public void Dispose()
