@@ -1165,6 +1165,8 @@ on_error:
 
 PJSIPDLL_DLL_API int dll_main(void)
 {
+	pjsua_set_null_snd_dev();
+
 	pj_status_t status;
 
 	/* Start pjsua */
